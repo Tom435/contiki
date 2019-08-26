@@ -31,15 +31,15 @@
  */
 
 /**
- * \file
- *         ICMPv6 echo request and error messages (RFC 4443)
- * \author Julien Abeille <jabeille@cisco.com> 
- * \author Mathilde Durvy <mdurvy@cisco.com>
+ * \addtogroup uip6
+ * @{
  */
 
 /**
- * \addtogroup uip6
- * @{
+ * \file
+ *    Header file for ICMPv6 message and error handing (RFC 4443)
+ * \author Julien Abeille <jabeille@cisco.com> 
+ * \author Mathilde Durvy <mdurvy@cisco.com>
  */
 
 #ifndef ICMP6_H_
@@ -69,6 +69,7 @@
 #define ICMP6_PRIV_EXP_200              200  /**< Private Experimentation */
 #define ICMP6_PRIV_EXP_201              201  /**< Private Experimentation */
 #define ICMP6_ROLL_TM    ICMP6_PRIV_EXP_200  /**< ROLL Trickle Multicast */
+#define ICMP6_ESMRF      ICMP6_PRIV_EXP_201  /**< ESMRF Multicast */
 /** @} */
 
 

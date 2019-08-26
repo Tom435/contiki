@@ -31,15 +31,15 @@
  */
 
 /**
- * \file
- *         Neighbor discovery (RFC 4861)
- * \author Julien Abeille <jabeille@cisco.com>
- * \author Mathilde Durvy <mdurvy@cisco.com>
+ * \addtogroup uip6
+ * @{
  */
 
 /**
- * \addtogroup uip6
- * @{
+ * \file
+ *    Header file for IPv6 Neighbor discovery (RFC 4861)
+ * \author Julien Abeille <jabeille@cisco.com>
+ * \author Mathilde Durvy <mdurvy@cisco.com>
  */
 
 #ifndef UIP_ND6_H_
@@ -59,9 +59,24 @@
 
 /** \name RFC 4861 Host constant */
 /** @{ */
+/** \brief Maximum router solicitation delay */
+#ifndef UIP_CONF_ND6_MAX_RTR_SOLICITATION_DELAY
 #define UIP_ND6_MAX_RTR_SOLICITATION_DELAY 1
+#else
+#define UIP_ND6_MAX_RTR_SOLICITATION_DELAY UIP_CONF_ND6_MAX_RTR_SOLICITATION_DELAY
+#endif
+/** \brief Router solicitation interval */
+#ifndef UIP_CONF_ND6_RTR_SOLICITATION_INTERVAL
 #define UIP_ND6_RTR_SOLICITATION_INTERVAL  4
-#define UIP_ND6_MAX_RTR_SOLICITATIONS	   3
+#else
+#define UIP_ND6_RTR_SOLICITATION_INTERVAL  UIP_CONF_ND6_RTR_SOLICITATION_INTERVAL
+#endif
+/** \brief Maximum router solicitations */
+#ifndef UIP_CONF_ND6_MAX_RTR_SOLICITATIONS
+#define UIP_ND6_MAX_RTR_SOLICITATIONS      3
+#else
+#define UIP_ND6_MAX_RTR_SOLICITATIONS      UIP_CONF_ND6_MAX_RTR_SOLICITATIONS
+#endif
 /** @} */
 
 /** \name RFC 4861 Router constants */
@@ -70,6 +85,11 @@
 #define UIP_ND6_SEND_RA                     1   /* enable/disable RA sending */
 #else
 #define UIP_ND6_SEND_RA UIP_CONF_ND6_SEND_RA
+#endif
+#ifndef UIP_CONF_ND6_SEND_NS
+#define UIP_ND6_SEND_NS                     1   /* enable/disable NS sending */
+#else
+#define UIP_ND6_SEND_NS UIP_CONF_ND6_SEND_NS
 #endif
 #ifndef UIP_CONF_ND6_SEND_NA
 #define UIP_ND6_SEND_NA                     1   /* enable/disable NA sending */
@@ -87,8 +107,12 @@
 #define UIP_ND6_MIN_RA_INTERVAL             UIP_CONF_ND6_MIN_RA_INTERVAL
 #endif
 #define UIP_ND6_M_FLAG                      0
-#define UIP_ND6_O_FLAG                      0
+#define UIP_ND6_O_FLAG                      (UIP_ND6_RA_RDNSS || UIP_ND6_RA_DNSSL)
+#ifndef UIP_CONF_ROUTER_LIFETIME
 #define UIP_ND6_ROUTER_LIFETIME             3 * UIP_ND6_MAX_RA_INTERVAL
+#else
+#define UIP_ND6_ROUTER_LIFETIME             UIP_CONF_ROUTER_LIFETIME
+#endif
 
 #define UIP_ND6_MAX_INITIAL_RA_INTERVAL     16  /*seconds*/
 #define UIP_ND6_MAX_INITIAL_RAS             3   /*transmissions*/
@@ -106,7 +130,7 @@
 #if UIP_CONF_LL_802154
 #define UIP_ND6_DEF_MAXDADNS 0
 #else /* UIP_CONF_LL_802154 */
-#define UIP_ND6_DEF_MAXDADNS UIP_ND6_SEND_NA
+#define UIP_ND6_DEF_MAXDADNS UIP_ND6_SEND_NS
 #endif /* UIP_CONF_LL_802154 */
 #else /* UIP_CONF_ND6_DEF_MAXDADNS */
 #define UIP_ND6_DEF_MAXDADNS UIP_CONF_ND6_DEF_MAXDADNS
@@ -128,14 +152,31 @@
 #endif
 
 #ifdef UIP_CONF_ND6_RETRANS_TIMER
-#define UIP_ND6_RETRANS_TIMER	       UIP_CONF_ND6_RETRANS_TIMER
+#define UIP_ND6_RETRANS_TIMER          UIP_CONF_ND6_RETRANS_TIMER
 #else
-#define UIP_ND6_RETRANS_TIMER	       1000
+#define UIP_ND6_RETRANS_TIMER          1000
 #endif
 
 #define UIP_ND6_DELAY_FIRST_PROBE_TIME 5
 #define UIP_ND6_MIN_RANDOM_FACTOR(x)   (x / 2)
 #define UIP_ND6_MAX_RANDOM_FACTOR(x)   ((x) + (x) / 2)
+/** @} */
+
+
+/** \name RFC 6106 RA DNS Options Constants  */
+/** @{ */
+#ifndef UIP_CONF_ND6_RA_RDNSS
+#define UIP_ND6_RA_RDNSS                0
+#else
+#define UIP_ND6_RA_RDNSS                UIP_CONF_ND6_RA_RDNSS
+#endif
+
+#ifndef UIP_CONF_ND6_RA_DNSSL
+#define UIP_ND6_RA_DNSSL                0
+#else
+#error Not implemented
+#define UIP_ND6_RA_DNSSL                UIP_CONF_ND6_RA_DNSSL
+#endif
 /** @} */
 
 
@@ -146,6 +187,8 @@
 #define UIP_ND6_OPT_PREFIX_INFO         3
 #define UIP_ND6_OPT_REDIRECTED_HDR      4
 #define UIP_ND6_OPT_MTU                 5
+#define UIP_ND6_OPT_RDNSS               25
+#define UIP_ND6_OPT_DNSSL               31
 /** @} */
 
 /** \name ND6 option types */
@@ -168,6 +211,8 @@
 #define UIP_ND6_OPT_HDR_LEN            2
 #define UIP_ND6_OPT_PREFIX_INFO_LEN    32
 #define UIP_ND6_OPT_MTU_LEN            8
+#define UIP_ND6_OPT_RDNSS_LEN          1
+#define UIP_ND6_OPT_DNSSL_LEN          1
 
 
 /* Length of TLLAO and SLLAO options, it is L2 dependant */
@@ -290,6 +335,15 @@ typedef struct uip_nd6_opt_mtu {
   uint32_t mtu;
 } uip_nd6_opt_mtu;
 
+/** \brief ND option RDNSS */
+typedef struct uip_nd6_opt_dns {
+  uint8_t type;
+  uint8_t len;
+  uint16_t reserved;
+  uint32_t lifetime;
+  uip_ipaddr_t ip;
+} uip_nd6_opt_dns;
+
 /** \struct Redirected header option */
 typedef struct uip_nd6_opt_redirected_hdr {
   uint8_t type;
@@ -303,30 +357,6 @@ typedef struct uip_nd6_opt_redirected_hdr {
  * @{
  */
  /**
- * \brief Process a neighbor solicitation
- *
- * The NS can be received in 3 cases (procedures):
- * - sender is performing DAD (ip src = unspecified, no SLLAO option)
- * - sender is performing NUD (ip dst = unicast)
- * - sender is performing address resolution (ip dest = solicited node mcast
- * address)
- *
- * We do:
- * - if the tgt belongs to me, reply, otherwise ignore
- * - if i was performing DAD for the same address, two cases:
- * -- I already sent a NS, hence I win
- * -- I did not send a NS yet, hence I lose
- *
- * If we need to send a NA in response (i.e. the NS was done for NUD, or
- * address resolution, or DAD and there is a conflict), we do it in this
- * function: set src, dst, tgt address in the three cases, then for all cases
- * set the rest, including  SLLAO
- *
- */
-void
-uip_nd6_ns_input(void);
-
-/**
  * \brief Send a neighbor solicitation, send a Neighbor Advertisement
  * \param src pointer to the src of the NS if known
  * \param dest pointer to ip address to send the NS, for DAD or ADDR Resol,

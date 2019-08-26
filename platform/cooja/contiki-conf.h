@@ -33,6 +33,10 @@
 #ifndef CONTIKI_CONF_H_
 #define CONTIKI_CONF_H_
 
+#ifdef INCLUDE_SUBPLATFORM_CONF
+#include "subplatform-conf.h"
+#endif /* INCLUDE_SUBPLATFORM_CONF */
+
 #define PROFILE_CONF_ON 0
 #define ENERGEST_CONF_ON 0
 #define LOG_CONF_ENABLED 1
@@ -132,17 +136,26 @@
 #ifndef UIP_CONF_MAX_ROUTES
 #define UIP_CONF_MAX_ROUTES   300
 #endif /* UIP_CONF_MAX_ROUTES */
+#ifndef RPL_NS_CONF_LINK_NUM
+#define RPL_NS_CONF_LINK_NUM 300
+#endif /* RPL_NS_CONF_LINK_NUM */
 
 #define TCPIP_CONF_ANNOTATE_TRANSMISSIONS 1
 
+#ifndef UIP_CONF_ND6_SEND_RA
 #define UIP_CONF_ND6_SEND_RA		0
+#endif
+
+#ifndef UIP_CONF_ND6_REACHABLE_TIME
 #define UIP_CONF_ND6_REACHABLE_TIME     600000
+#endif
+
+#ifndef UIP_CONF_ND6_RETRANS_TIMER
 #define UIP_CONF_ND6_RETRANS_TIMER      10000
+#endif
 
 #define LINKADDR_CONF_SIZE            8
 #define UIP_CONF_NETIF_MAX_ADDRESSES  3
-#define UIP_CONF_ND6_MAX_PREFIXES     3
-#define UIP_CONF_ND6_MAX_DEFROUTERS   2
 
 #ifndef UIP_CONF_IPV6_QUEUE_PKT
 #define UIP_CONF_IPV6_QUEUE_PKT         1
@@ -150,37 +163,26 @@
 #define UIP_CONF_IPV6_CHECKS            1
 #define UIP_CONF_IPV6_REASSEMBLY        0
 #define UIP_CONF_NETIF_MAX_ADDRESSES    3
-#define UIP_CONF_ND6_MAX_PREFIXES       3
-#define UIP_CONF_ND6_MAX_DEFROUTERS     2
 #define UIP_CONF_IP_FORWARD             0
-#ifndef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE		240
-#endif
 
-#define SICSLOWPAN_CONF_COMPRESSION_IPV6        0
-#define SICSLOWPAN_CONF_COMPRESSION_HC1         1
-#define SICSLOWPAN_CONF_COMPRESSION_HC01        2
 #define SICSLOWPAN_CONF_COMPRESSION             SICSLOWPAN_COMPRESSION_HC06
 #ifndef SICSLOWPAN_CONF_FRAG
 #define SICSLOWPAN_CONF_FRAG                    1
 #define SICSLOWPAN_CONF_MAXAGE                  8
 #endif /* SICSLOWPAN_CONF_FRAG */
-#define SICSLOWPAN_CONF_CONVENTIONAL_MAC	1
 #define SICSLOWPAN_CONF_MAX_ADDR_CONTEXTS       2
-#ifndef SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS
-#define SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS   8
-#endif /* SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS */
 
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 
 
 #define PACKETBUF_CONF_ATTRS_INLINE 1
 
+#ifndef QUEUEBUF_CONF_NUM
 #define QUEUEBUF_CONF_NUM 16
+#endif
 
 #define CC_CONF_REGISTER_ARGS          1
 #define CC_CONF_FUNCTION_POINTER_ARGS  1
-#define CC_CONF_FASTCALL
 #define CC_CONF_VA_ARGS                1
 #define CC_CONF_INLINE inline
 
@@ -198,8 +200,12 @@ typedef unsigned short uip_stats_t;
 
 #define CLOCK_CONF_SECOND 1000L
 typedef unsigned long clock_time_t;
-typedef unsigned long rtimer_clock_t;
-#define RTIMER_CLOCK_LT(a,b)     ((signed long)((a)-(b)) < 0)
+typedef uint64_t rtimer_clock_t;
+#define RTIMER_CLOCK_DIFF(a,b)     ((int64_t)((a)-(b)))
+
+#define RADIO_DELAY_BEFORE_TX 0
+#define RADIO_DELAY_BEFORE_RX 0
+#define RADIO_DELAY_BEFORE_DETECT 0
 
 #define AODV_COMPLIANCE
 #define AODV_NUM_RT_ENTRIES 32
@@ -210,12 +216,6 @@ typedef unsigned long rtimer_clock_t;
 
 #define UIP_CONF_DHCP_LIGHT
 #define UIP_CONF_LLH_LEN         0
-#ifndef  UIP_CONF_RECEIVE_WINDOW
-#define UIP_CONF_RECEIVE_WINDOW  48
-#endif
-#ifndef  UIP_CONF_TCP_MSS
-#define UIP_CONF_TCP_MSS         48
-#endif
 #define UIP_CONF_MAX_CONNECTIONS 4
 #define UIP_CONF_MAX_LISTENPORTS 8
 #define UIP_CONF_UDP_CONNS       12
@@ -238,10 +238,27 @@ typedef unsigned long rtimer_clock_t;
 
 #define CFS_CONF_OFFSET_TYPE	long
 
+#ifndef UIP_CONF_BUFFER_SIZE
+#define UIP_CONF_BUFFER_SIZE            1600
+#endif
+
+#ifndef UIP_CONF_TCP_MSS
+#define UIP_CONF_TCP_MSS                (UIP_CONF_BUFFER_SIZE - 70)
+#endif
+
+#ifndef UIP_CONF_RECEIVE_WINDOW
+#define UIP_CONF_RECEIVE_WINDOW         (UIP_CONF_BUFFER_SIZE - 70)
+#endif
+
+#define RF_CHANNEL                     26
+#define IEEE802154_CONF_PANID          0xABCD
+#define NETSTACK_RADIO_MAX_PAYLOAD_LEN 125
+
 /* include the project config */
 /* PROJECT_CONF_H might be defined in the project Makefile */
 #ifdef PROJECT_CONF_H
 #include PROJECT_CONF_H
 #endif /* PROJECT_CONF_H */
+
 
 #endif /* CONTIKI_CONF_H_ */

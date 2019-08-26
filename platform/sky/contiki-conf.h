@@ -37,6 +37,10 @@
 #define CC2420_CONF_AUTOACK              1
 #endif /* CC2420_CONF_AUTOACK */
 
+/* The TSCH default slot length of 10ms is a bit too short for this platform,
+ * use 15ms instead. */
+#define TSCH_CONF_DEFAULT_TIMESLOT_LENGTH 15000
+
 /* Specify whether the RDC layer should enable
    per-packet power profiling. */
 #define CONTIKIMAC_CONF_COMPOWER         1
@@ -146,14 +150,14 @@
 
 /* configure number of neighbors and routes */
 #ifndef NBR_TABLE_CONF_MAX_NEIGHBORS
-#define NBR_TABLE_CONF_MAX_NEIGHBORS     20
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     16
 #endif /* NBR_TABLE_CONF_MAX_NEIGHBORS */
 #ifndef UIP_CONF_MAX_ROUTES
-#define UIP_CONF_MAX_ROUTES   20
+#define UIP_CONF_MAX_ROUTES   16
 #endif /* UIP_CONF_MAX_ROUTES */
 
 #define UIP_CONF_ND6_SEND_RA		0
-#define UIP_CONF_ND6_SEND_NA		0
+#define UIP_CONF_ND6_SEND_NS		0
 #define UIP_CONF_ND6_REACHABLE_TIME     600000
 #define UIP_CONF_ND6_RETRANS_TIMER      10000
 
@@ -164,26 +168,17 @@
 #define UIP_CONF_IPV6_CHECKS            1
 #define UIP_CONF_IPV6_REASSEMBLY        0
 #define UIP_CONF_NETIF_MAX_ADDRESSES    3
-#define UIP_CONF_ND6_MAX_PREFIXES       3
-#define UIP_CONF_ND6_MAX_DEFROUTERS     2
 #define UIP_CONF_IP_FORWARD             0
 #ifndef UIP_CONF_BUFFER_SIZE
 #define UIP_CONF_BUFFER_SIZE		240
 #endif
 
-#define SICSLOWPAN_CONF_COMPRESSION_IPV6        0
-#define SICSLOWPAN_CONF_COMPRESSION_HC1         1
-#define SICSLOWPAN_CONF_COMPRESSION_HC01        2
 #define SICSLOWPAN_CONF_COMPRESSION             SICSLOWPAN_COMPRESSION_HC06
 #ifndef SICSLOWPAN_CONF_FRAG
 #define SICSLOWPAN_CONF_FRAG                    1
 #define SICSLOWPAN_CONF_MAXAGE                  8
 #endif /* SICSLOWPAN_CONF_FRAG */
-#define SICSLOWPAN_CONF_CONVENTIONAL_MAC	1
 #define SICSLOWPAN_CONF_MAX_ADDR_CONTEXTS       2
-#ifndef SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS
-#define SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS   5
-#endif /* SICSLOWPAN_CONF_MAX_MAC_TRANSMISSIONS */
 #else /* NETSTACK_CONF_WITH_IPV6 */
 #define UIP_CONF_IP_FORWARD      1
 #define UIP_CONF_BUFFER_SIZE     108

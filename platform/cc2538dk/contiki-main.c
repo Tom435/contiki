@@ -29,13 +29,13 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /**
- * \addtogroup platform
+ * \addtogroup cc2538-platforms
  * @{
  *
- * \defgroup cc2538 The cc2538 Development Kit platform
+ * \defgroup cc2538dk The cc2538 Development Kit platform
  *
- * The cc2538DK is the new platform by Texas Instruments, based on the
- * cc2530 SoC with an ARM Cortex-M3 core.
+ * The cc2538DK is a platform by Texas Instruments, based on the
+ * cc2538 SoC with an ARM Cortex-M3 core.
  * @{
  *
  * \file
@@ -43,9 +43,9 @@
  */
 /*---------------------------------------------------------------------------*/
 #include "contiki.h"
+#include "dev/adc.h"
 #include "dev/leds.h"
 #include "dev/sys-ctrl.h"
-#include "dev/scb.h"
 #include "dev/nvic.h"
 #include "dev/uart.h"
 #include "dev/watchdog.h"
@@ -55,6 +55,7 @@
 #include "dev/slip.h"
 #include "dev/cc2538-rf.h"
 #include "dev/udma.h"
+#include "dev/crypto.h"
 #include "usb/usb-serial.h"
 #include "lib/random.h"
 #include "net/netstack.h"
@@ -62,6 +63,7 @@
 #include "net/ip/tcpip.h"
 #include "net/ip/uip.h"
 #include "net/mac/frame802154.h"
+#include "soc.h"
 #include "cpu.h"
 #include "reg.h"
 #include "ieee-addr.h"
@@ -183,6 +185,9 @@ main(void)
 
   PUTS(CONTIKI_VERSION_STRING);
   PUTS(BOARD_STRING);
+#if STARTUP_CONF_VERBOSE
+  soc_print_info();
+#endif
 
   PRINTF(" Net: ");
   PRINTF("%s\n", NETSTACK_NETWORK.name);
@@ -200,6 +205,12 @@ main(void)
   ctimer_init();
 
   set_rf_params();
+
+#if CRYPTO_CONF_INIT
+  crypto_init();
+  crypto_disable();
+#endif
+
   netstack_init();
 
 #if NETSTACK_CONF_WITH_IPV6
@@ -207,6 +218,8 @@ main(void)
   queuebuf_init();
   process_start(&tcpip_process, NULL);
 #endif /* NETSTACK_CONF_WITH_IPV6 */
+
+  adc_init();
 
   process_start(&sensors_process, NULL);
 
